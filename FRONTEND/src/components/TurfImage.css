@@ -1,0 +1,41 @@
+/* ── Turf Image ──────────────────────────────────────────────── */
+.turf-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Placeholder */
+.turf-img-placeholder {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.placeholder-icons {
+  display: flex;
+  gap: 16px;
+  opacity: 0.55;
+}
+
+.placeholder-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.placeholder-location {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(6px);
+}

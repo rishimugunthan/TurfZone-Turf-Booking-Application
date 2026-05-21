@@ -1,0 +1,19 @@
+/* ── Star Rating ─────────────────────────────────────────────── */
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.star--full  { color: #FFAD08; }
+.star--half  { color: #FFAD08; opacity: 0.7; }
+.star--empty { color: #333; }
+
+/* Size variants */
+.stars--sm .star { font-size: 12px; }
+.stars--md .star { font-size: 15px; }
+.stars--lg .star { font-size: 20px; }

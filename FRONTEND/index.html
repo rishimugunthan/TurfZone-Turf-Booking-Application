@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TurfZone — Book Your Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --red: #E63946;
+    --red-dark: #c1121f;
+    --red-dim: rgba(230,57,70,0.15);
+    --black: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --surface3: #222222;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --text: #f0f0f0;
+    --text-muted: #888;
+    --text-dim: #555;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--black); color: var(--text); font-family: var(--font-body); min-height: 100vh; }
+
+  /* NAVBAR */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; color: var(--text); }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-link { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; cursor: pointer; }
+  .nav-link:hover { color: var(--text); }
+  .nav-btn { padding: 8px 20px; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; font-family: var(--font-body); }
+  .btn-outline { background: transparent; border: 1px solid var(--border-hover); color: var(--text); }
+  .btn-outline:hover { border-color: var(--red); color: var(--red); }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-red:hover { background: var(--red-dark); }
+  .nav-user { display: flex; align-items: center; gap: 12px; }
+  .nav-username { font-size: 14px; color: var(--text-muted); }
+  .nav-username strong { color: var(--red); }
+
+  /* HERO */
+  .hero {
+    position: relative; overflow: hidden;
+    min-height: 520px;
+    display: flex; align-items: center;
+    padding: 4rem 2rem;
+    background: var(--surface);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0507 50%, #0a0a0a 100%);
+  }
+  .hero-pattern {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, var(--red) 40px, var(--red) 41px),
+                      repeating-linear-gradient(90deg, transparent, transparent 40px, var(--red) 40px, var(--red) 41px);
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 700px; }
+  .hero-badge { display: inline-block; background: var(--red-dim); border: 1px solid rgba(230,57,70,0.3); color: var(--red); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; margin-bottom: 1.5rem; }
+  .hero-title { font-family: var(--font-display); font-size: clamp(52px, 8vw, 96px); line-height: 0.95; color: var(--text); margin-bottom: 1.5rem; }
+  .hero-title .accent { color: var(--red); display: block; }
+  .hero-sub { font-size: 17px; color: var(--text-muted); line-height: 1.7; max-width: 480px; margin-bottom: 2rem; }
+  .hero-cta { display: inline-flex; align-items: center; gap: 10px; background: var(--red); color: #fff; padding: 14px 28px; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; border: none; font-family: var(--font-body); transition: all 0.2s; }
+  .hero-cta:hover { background: var(--red-dark); transform: translateY(-2px); }
+  .hero-stats { position: relative; z-index: 1; margin-left: auto; display: flex; flex-direction: column; gap: 12px; }
+  .stat-card { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.8rem; text-align: center; }
+  .stat-num { font-family: var(--font-display); font-size: 36px; color: var(--red); }
+  .stat-label { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+
+  /* SEARCH + FILTER */
+  .controls-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1.5rem 2rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .control-group { display: flex; flex-direction: column; gap: 6px; }
+  .control-label { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+  .control-input, .control-select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 10px 14px; border-radius: var(--radius); outline: none; transition: border-color 0.2s; min-width: 180px; }
+  .control-input:focus, .control-select:focus { border-color: var(--red); }
+  .control-select option { background: var(--surface2); }
+  .sort-btn-group { display: flex; gap: 6px; }
+  .sort-btn { padding: 10px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border); background: var(--surface2); color: var(--text-muted); font-family: var(--font-body); }
+  .sort-btn:hover { border-color: var(--red); color: var(--red); }
+  .sort-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* TURFS SECTION */
+  .turfs-section { padding: 2.5rem 2rem; max-width: 1300px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+  .section-title { font-family: var(--font-display); font-size: 36px; letter-spacing: 1px; }
+  .turf-count { font-size: 14px; color: var(--text-muted); }
+  .turfs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+
+  /* TURF CARD */
+  .turf-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: all 0.3s; cursor: pointer; }
+  .turf-card:hover { border-color: var(--red); transform: translateY(-4px); box-shadow: 0 8px 32px rgba(230,57,70,0.12); }
+  .turf-img { width: 100%; height: 200px; object-fit: cover; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .turf-img-placeholder { width: 100%; height: 200px; position: relative; overflow: hidden; }
+  .turf-img-bg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .turf-badge-loc { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.7); border: 1px solid var(--border-hover); color: var(--text-muted); font-size: 11px; padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(8px); }
+  .turf-body { padding: 1.2rem; }
+  .turf-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .turf-name { font-size: 18px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .turf-price { font-family: var(--font-display); font-size: 22px; color: var(--red); white-space: nowrap; }
+  .turf-price-sub { font-size: 11px; color: var(--text-dim); font-family: var(--font-body); font-weight: 400; }
+  .turf-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .stars { display: flex; gap: 2px; }
+  .star { font-size: 14px; }
+  .rating-num { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+  .sports-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.2rem; }
+  .sport-tag { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.5px; }
+  .book-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--red); color: var(--red); font-size: 14px; font-weight: 600; border-radius: var(--radius); cursor: pointer; font-family: var(--font-body); transition: all 0.2s; letter-spacing: 0.5px; }
+  .book-btn:hover { background: var(--red); color: #fff; }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 5rem 2rem; color: var(--text-dim); }
+  .empty-icon { font-size: 64px; margin-bottom: 1rem; }
+  .empty-title { font-family: var(--font-display); font-size: 28px; color: var(--text-muted); margin-bottom: 0.5rem; }
+
+  /* MODAL OVERLAY */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+  .modal-header { padding: 1.5rem 1.5rem 0; display: flex; align-items: flex-start; justify-content: space-between; }
+  .modal-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 1px; }
+  .modal-title span { color: var(--red); }
+  .modal-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); width: 32px; height: 32px; border-radius: var(--radius); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .modal-close:hover { border-color: var(--red); color: var(--red); }
+  .modal-body { padding: 1.5rem; }
+  .modal-turf-info { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+  .modal-turf-name { font-weight: 600; font-size: 15px; }
+  .modal-turf-price { color: var(--red); font-family: var(--font-display); font-size: 20px; }
+
+  /* FORM */
+  .form-group { margin-bottom: 1rem; }
+  .form-label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 11px 14px; border-radius: var(--radius); outline: none; transition: border-color 0.2s; }
+  .form-input:focus { border-color: var(--red); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-submit { width: 100%; padding: 14px; background: var(--red); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--font-body); transition: all 0.2s; margin-top: 0.5rem; letter-spacing: 0.5px; }
+  .form-submit:hover { background: var(--red-dark); }
+  .form-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .form-error { color: #ff6b6b; font-size: 12px; margin-top: 4px; }
+  .form-hint { font-size: 12px; color: var(--text-dim); text-align: center; margin-top: 1rem; }
+  .form-hint a { color: var(--red); cursor: pointer; text-decoration: none; }
+  .form-hint a:hover { text-decoration: underline; }
+  .success-msg { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.3); color: #2ecc71; padding: 12px 14px; border-radius: var(--radius); font-size: 14px; margin-bottom: 1rem; }
+  .error-msg { background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: #ff6b6b; padding: 12px 14px; border-radius: var(--radius); font-size: 14px; margin-bottom: 1rem; }
+
+  /* PAGE: LOGIN / SIGNUP */
+  .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: var(--black); }
+  .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 100%; max-width: 420px; padding: 2.5rem; }
+  .auth-logo { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-align: center; margin-bottom: 0.5rem; }
+  .auth-logo span { color: var(--red); }
+  .auth-subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 2rem; }
+  .auth-title { font-family: var(--font-display); font-size: 32px; margin-bottom: 0.5rem; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* SPINNER */
+  .spinner-wrap { display: flex; align-items: center; justify-content: center; padding: 4rem; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--surface2); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* FOOTER */
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-dim); font-size: 13px; margin-top: 4rem; }
+  footer strong { color: var(--text-muted); }
+
+  /* LOADING OVERLAY */
+  .full-spinner { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; display: flex; align-items: center; justify-content: center; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 1rem; }
+    .hero { flex-direction: column; gap: 2rem; }
+    .hero-stats { flex-direction: row; margin-left: 0; flex-wrap: wrap; }
+    .controls-bar { padding: 1rem; }
+    .turfs-section { padding: 1.5rem 1rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .auth-card { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback, createContext, useContext } = React;
+
+/* ─── API CONFIG ─────────────────────────────────────────────── */
+const API = axios.create({ baseURL: 'http://localhost:8080' });
+API.interceptors.request.use(cfg => {
+  const token = localStorage.getItem('turfzone_token');
+  if (token) cfg.headers.Authorization = `Bearer ${token}`;
+  return cfg;
+});
+
+/* ─── MOCK DATA (used when backend is not running) ──────────── */
+const MOCK_TURFS = [
+  { id: 1, turfName: 'Implecity Turf', sportsAvailable: 'Cricket,Football,Badminton', pricePerHour: 800, rating: 4.5, location: 'Anna Nagar, Chennai', imageUrl: null, createdAt: '2024-01-01' },
+  { id: 2, turfName: 'Indoor Battle Turf', sportsAvailable: 'Cricket,Football', pricePerHour: 500, rating: 3.9, location: 'T. Nagar, Chennai', imageUrl: null, createdAt: '2024-01-02' },
+  { id: 3, turfName: 'Learn Fort', sportsAvailable: 'Cricket,Football,Badminton,Basketball,Tennis,Volleyball', pricePerHour: 1000, rating: 4.8, location: 'Velachery, Chennai', imageUrl: null, createdAt: '2024-01-03' },
+];
+
+/* ─── AUTH CONTEXT ───────────────────────────────────────────── */
+const AuthCtx = createContext(null);
+function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('turfzone_token');
+    const stored = localStorage.getItem('turfzone_user');
+    if (token && stored) {
+      try { setUser(JSON.parse(stored)); } catch(e) {}
+    }
+    setAuthLoading(false);
+  }, []);
+
+  const login = (token, userData) => {
+    localStorage.setItem('turfzone_token', token);
+    localStorage.setItem('turfzone_user', JSON.stringify(userData));
+    setUser(userData);
+  };
+  const logout = () => {
+    localStorage.removeItem('turfzone_token');
+    localStorage.removeItem('turfzone_user');
+    setUser(null);
+  };
+  return <AuthCtx.Provider value={{ user, login, logout, authLoading }}>{children}</AuthCtx.Provider>;
+}
+
+/* ─── STAR RATING ─────────────────────────────────────────────── */
+function Stars({ rating }) {
+  return <div className="stars">
+    {[1,2,3,4,5].map(i => {
+      const full = i <= Math.floor(rating);
+      const half = !full && i === Math.ceil(rating) && rating % 1 >= 0.5;
+      return <span key={i} className="star" style={{ color: (full||half) ? '#FFAD08' : '#333' }}>
+        {full ? '★' : half ? '⯨' : '★'}
+      </span>;
+    })}
+  </div>;
+}
+
+/* ─── TURF IMAGE PLACEHOLDER ─────────────────────────────────── */
+const SPORT_COLORS = { 'Cricket':'#1a4a2e', 'Football':'#0d3b6e', 'Badminton':'#4a1a2e', 'Basketball':'#4a2e0d', 'Tennis':'#2e4a0d', 'Volleyball':'#0d3b4a' };
+function TurfImage({ turf }) {
+  if (turf.imageUrl) return <img src={turf.imageUrl} alt={turf.turfName} style={{width:'100%',height:'200px',objectFit:'cover'}}/>;
+  const sports = turf.sportsAvailable.split(',');
+  const primary = sports[0];
+  const bg = SPORT_COLORS[primary] || '#1a1a1a';
+  const icons = { Cricket:'🏏', Football:'⚽', Badminton:'🏸', Basketball:'🏀', Tennis:'🎾', Volleyball:'🏐' };
+  return (
+    <div style={{height:'200px', background:`linear-gradient(135deg, ${bg} 0%, #0a0a0a 100%)`, display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden'}}>
+      <div style={{display:'flex', gap:'16px', fontSize:'32px', opacity:0.6}}>
+        {sports.slice(0,3).map(s => <span key={s}>{icons[s]||'🏆'}</span>)}
+      </div>
+      <div style={{position:'absolute', bottom:'10px', left:'12px', fontSize:'11px', color:'rgba(255,255,255,0.4)', background:'rgba(0,0,0,0.5)', padding:'3px 8px', borderRadius:'999px'}}>
+        📍 {turf.location}
+      </div>
+    </div>
+  );
+}
+
+/* ─── TURF CARD ───────────────────────────────────────────────── */
+function TurfCard({ turf, onBook }) {
+  const sports = turf.sportsAvailable.split(',').map(s => s.trim());
+  return (
+    <div className="turf-card" onClick={() => onBook(turf)}>
+      <TurfImage turf={turf}/>
+      <div className="turf-body">
+        <div className="turf-top">
+          <div className="turf-name">{turf.turfName}</div>
+          <div>
+            <div className="turf-price">₹{turf.pricePerHour.toLocaleString()}</div>
+            <div className="turf-price-sub">/ hour</div>
+          </div>
+        </div>
+        <div className="turf-rating">
+          <Stars rating={turf.rating}/>
+          <span className="rating-num">{turf.rating}</span>
+        </div>
+        <div className="sports-list">
+          {sports.map(s => <span key={s} className="sport-tag">{s}</span>)}
+        </div>
+        <button className="book-btn" onClick={e => { e.stopPropagation(); onBook(turf); }}>
+          BOOK NOW →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── BOOKING MODAL ───────────────────────────────────────────── */
+function BookingModal({ turf, onClose, user }) {
+  const [form, setForm] = useState({ userName: user?.fullName || '', email: user?.email || '', bookingDate: '', bookingTime: '' });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const e = {};
+    if (!form.userName.trim()) e.userName = 'Name is required';
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
+    if (!form.bookingDate) e.bookingDate = 'Date is required';
+    if (!form.bookingTime) e.bookingTime = 'Time is required';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setLoading(true); setError('');
+    try {
+      await API.post('/api/bookings', { ...form, turfId: turf.id });
+      setSuccess(`🎉 Booking confirmed for ${turf.turfName}! Check your email for confirmation.`);
+    } catch (err) {
+      if (err.response?.status === 403 || err.response?.status === 401) {
+        setError('Please login to book a turf.');
+      } else {
+        // Demo mode — simulate success
+        setSuccess(`🎉 [Demo] Booking confirmed for ${turf.turfName}! A confirmation email would be sent to ${form.email}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const today = new Date().toISOString().split('T')[0];
+
+  return (
+    <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-header">
+          <div className="modal-title">BOOK <span>SLOT</span></div>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">
+          <div className="modal-turf-info">
+            <div>
+              <div className="modal-turf-name">{turf.turfName}</div>
+              <div style={{fontSize:'12px',color:'var(--text-dim)',marginTop:'2px'}}>📍 {turf.location}</div>
+            </div>
+            <div>
+              <div className="modal-turf-price">₹{turf.pricePerHour.toLocaleString()}</div>
+              <div style={{fontSize:'11px',color:'var(--text-dim)',textAlign:'right'}}>/hour</div>
+            </div>
+          </div>
+
+          {success && <div className="success-msg">{success}</div>}
+          {error && <div className="error-msg">{error}</div>}
+
+          {!success && <>
+            <div className="form-group">
+              <label className="form-label">Full Name</label>
+              <input className="form-input" placeholder="Your name" value={form.userName} onChange={e => setForm({...form, userName: e.target.value})}/>
+              {errors.userName && <div className="form-error">{errors.userName}</div>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input className="form-input" type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})}/>
+              {errors.email && <div className="form-error">{errors.email}</div>}
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Date</label>
+                <input className="form-input" type="date" min={today} value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})}/>
+                {errors.bookingDate && <div className="form-error">{errors.bookingDate}</div>}
+              </div>
+              <div className="form-group">
+                <label className="form-label">Time Slot</label>
+                <select className="form-input" value={form.bookingTime} onChange={e => setForm({...form, bookingTime: e.target.value})}>
+                  <option value="">Select time</option>
+                  {['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'].map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+                {errors.bookingTime && <div className="form-error">{errors.bookingTime}</div>}
+              </div>
+            </div>
+            <button className="form-submit" onClick={handleSubmit} disabled={loading}>
+              {loading ? 'CONFIRMING...' : 'CONFIRM BOOKING'}
+            </button>
+          </>}
+          {success && <button className="form-submit" style={{marginTop:'0.5rem'}} onClick={onClose}>CLOSE</button>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── LOGIN PAGE ──────────────────────────────────────────────── */
+function LoginPage({ onSwitchToSignup, onBack }) {
+  const { login } = useContext(AuthCtx);
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const e = {};
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
+    if (!form.password || form.password.length < 6) e.password = 'Password must be at least 6 characters';
+    setErrors(e); return Object.keys(e).length === 0;
+  };
+
+  const handleLogin = async () => {
+    if (!validate()) return;
+    setLoading(true); setError('');
+    try {
+      const res = await API.post('/api/auth/login', form);
+      login(res.data.token, res.data.user);
+      onBack();
+    } catch (err) {
+      if (err.response?.status === 401) setError('Invalid email or password.');
+      else {
+        // Demo login
+        login('demo-jwt-token', { id: 1, fullName: 'Demo User', email: form.email });
+        onBack();
+      }
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-logo">TURF<span>ZONE</span></div>
+        <div className="auth-subtitle">Book your next match</div>
+        <hr className="divider"/>
+        <div className="auth-title">SIGN IN</div>
+        <p style={{color:'var(--text-muted)',fontSize:'13px',marginBottom:'1.5rem'}}>Welcome back! Enter your credentials.</p>
+
+        {error && <div className="error-msg">{error}</div>}
+
+        <div className="form-group">
+          <label className="form-label">Email</label>
+          <input className="form-input" type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})}/>
+          {errors.email && <div className="form-error">{errors.email}</div>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Password</label>
+          <input className="form-input" type="password" placeholder="••••••••" value={form.password} onChange={e => setForm({...form, password: e.target.value})}
+            onKeyDown={e => e.key === 'Enter' && handleLogin()}/>
+          {errors.password && <div className="form-error">{errors.password}</div>}
+        </div>
+        <button className="form-submit" onClick={handleLogin} disabled={loading}>
+          {loading ? 'SIGNING IN...' : 'SIGN IN'}
+        </button>
+        <div className="form-hint">
+          Don't have an account? <a onClick={onSwitchToSignup}>Create one →</a>
+        </div>
+        <div className="form-hint" style={{marginTop:'8px'}}>
+          <a onClick={onBack}>← Back to turfs</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── SIGNUP PAGE ─────────────────────────────────────────────── */
+function SignupPage({ onSwitchToLogin, onBack }) {
+  const { login } = useContext(AuthCtx);
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const e = {};
+    if (!form.fullName.trim() || form.fullName.length < 2) e.fullName = 'Full name is required';
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
+    if (!form.password || form.password.length < 6) e.password = 'Password must be at least 6 characters';
+    if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
+    setErrors(e); return Object.keys(e).length === 0;
+  };
+
+  const handleSignup = async () => {
+    if (!validate()) return;
+    setLoading(true); setError('');
+    try {
+      const res = await API.post('/api/auth/signup', { fullName: form.fullName, email: form.email, password: form.password });
+      login(res.data.token, res.data.user);
+      onBack();
+    } catch (err) {
+      if (err.response?.status === 409) setError('Email already registered. Please login.');
+      else {
+        login('demo-jwt-token', { id: 1, fullName: form.fullName, email: form.email });
+        onBack();
+      }
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-logo">TURF<span>ZONE</span></div>
+        <div className="auth-subtitle">Book your next match</div>
+        <hr className="divider"/>
+        <div className="auth-title">CREATE ACCOUNT</div>
+        <p style={{color:'var(--text-muted)',fontSize:'13px',marginBottom:'1.5rem'}}>Join thousands of sports enthusiasts.</p>
+
+        {error && <div className="error-msg">{error}</div>}
+
+        <div className="form-group">
+          <label className="form-label">Full Name</label>
+          <input className="form-input" placeholder="Your full name" value={form.fullName} onChange={e => setForm({...form, fullName: e.target.value})}/>
+          {errors.fullName && <div className="form-error">{errors.fullName}</div>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Email</label>
+          <input className="form-input" type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})}/>
+          {errors.email && <div className="form-error">{errors.email}</div>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Password</label>
+          <input className="form-input" type="password" placeholder="Min 6 characters" value={form.password} onChange={e => setForm({...form, password: e.target.value})}/>
+          {errors.password && <div className="form-error">{errors.password}</div>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Confirm Password</label>
+          <input className="form-input" type="password" placeholder="Re-enter password" value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})}
+            onKeyDown={e => e.key === 'Enter' && handleSignup()}/>
+          {errors.confirmPassword && <div className="form-error">{errors.confirmPassword}</div>}
+        </div>
+        <button className="form-submit" onClick={handleSignup} disabled={loading}>
+          {loading ? 'CREATING...' : 'CREATE ACCOUNT'}
+        </button>
+        <div className="form-hint">
+          Already have an account? <a onClick={onSwitchToLogin}>Sign in →</a>
+        </div>
+        <div className="form-hint" style={{marginTop:'8px'}}>
+          <a onClick={onBack}>← Back to turfs</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── MAIN HOME PAGE ──────────────────────────────────────────── */
+function HomePage({ setPage }) {
+  const { user, logout } = useContext(AuthCtx);
+  const [turfs, setTurfs] = useState(MOCK_TURFS);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [filterSport, setFilterSport] = useState('');
+  const [filterRating, setFilterRating] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [sortBy, setSortBy] = useState('');
+  const [bookingTurf, setBookingTurf] = useState(null);
+
+  useEffect(() => {
+    const fetchTurfs = async () => {
+      try {
+        const res = await API.get('/api/turfs');
+        setTurfs(res.data);
+      } catch {
+        setTurfs(MOCK_TURFS); // fallback to mock
+      } finally { setLoading(false); }
+    };
+    fetchTurfs();
+  }, []);
+
+  const handleBook = (turf) => {
+    if (!user) { setPage('login'); return; }
+    setBookingTurf(turf);
+  };
+
+  // Client-side filter + sort
+  let displayed = [...turfs];
+  if (search.trim()) {
+    const q = search.toLowerCase();
+    displayed = displayed.filter(t => t.turfName.toLowerCase().includes(q) || t.location.toLowerCase().includes(q));
+  }
+  if (filterSport) displayed = displayed.filter(t => t.sportsAvailable.toLowerCase().includes(filterSport.toLowerCase()));
+  if (filterRating) displayed = displayed.filter(t => t.rating >= parseFloat(filterRating));
+  if (minPrice) displayed = displayed.filter(t => t.pricePerHour >= parseInt(minPrice));
+  if (maxPrice) displayed = displayed.filter(t => t.pricePerHour <= parseInt(maxPrice));
+  if (sortBy === 'price_asc') displayed.sort((a,b) => a.pricePerHour - b.pricePerHour);
+  else if (sortBy === 'price_desc') displayed.sort((a,b) => b.pricePerHour - a.pricePerHour);
+  else if (sortBy === 'rating') displayed.sort((a,b) => b.rating - a.rating);
+
+  const allSports = [...new Set(MOCK_TURFS.flatMap(t => t.sportsAvailable.split(',')))];
+
+  return (
+    <>
+      {/* NAVBAR */}
+      <nav>
+        <div className="nav-logo" onClick={() => setPage('home')} style={{cursor:'pointer'}}>TURF<span>ZONE</span></div>
+        <div className="nav-links">
+          <span className="nav-link" onClick={() => document.getElementById('turfs-section')?.scrollIntoView({behavior:'smooth'})}>Turfs</span>
+          {user ? (
+            <div className="nav-user">
+              <span className="nav-username">Hey, <strong>{user.fullName?.split(' ')[0]}</strong></span>
+              <button className="nav-btn btn-outline" onClick={logout}>Logout</button>
+            </div>
+          ) : (
+            <>
+              <button className="nav-btn btn-outline" onClick={() => setPage('login')}>Login</button>
+              <button className="nav-btn btn-red" onClick={() => setPage('signup')}>Sign Up</button>
+            </>
+          )}
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-bg"/>
+        <div className="hero-pattern"/>
+        <div className="hero-content">
+          <div className="hero-badge">⚡ Premium Sports Facilities</div>
+          <h1 className="hero-title">
+            PLAY <span className="accent">YOUR</span> GAME
+          </h1>
+          <p className="hero-sub">Book premium turf slots in seconds. From cricket to badminton — find your court, pick your time, get on the field.</p>
+          <button className="hero-cta" onClick={() => document.getElementById('turfs-section')?.scrollIntoView({behavior:'smooth'})}>
+            BROWSE TURFS ↓
+          </button>
+        </div>
+        <div className="hero-stats">
+          <div className="stat-card"><div className="stat-num">3+</div><div className="stat-label">Premium Turfs</div></div>
+          <div className="stat-card"><div className="stat-num">6</div><div className="stat-label">Sports</div></div>
+          <div className="stat-card"><div className="stat-num">4.8★</div><div className="stat-label">Top Rating</div></div>
+        </div>
+      </section>
+
+      {/* CONTROLS */}
+      <div className="controls-bar">
+        <div className="control-group" style={{flex:1, minWidth:'200px'}}>
+          <div className="control-label">Search</div>
+          <input className="control-input" placeholder="Search turf or location..." value={search} onChange={e => setSearch(e.target.value)}/>
+        </div>
+        <div className="control-group">
+          <div className="control-label">Sport</div>
+          <select className="control-select" value={filterSport} onChange={e => setFilterSport(e.target.value)}>
+            <option value="">All Sports</option>
+            {allSports.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="control-group">
+          <div className="control-label">Min Rating</div>
+          <select className="control-select" style={{minWidth:'130px'}} value={filterRating} onChange={e => setFilterRating(e.target.value)}>
+            <option value="">Any Rating</option>
+            <option value="4.5">4.5+</option>
+            <option value="4.0">4.0+</option>
+            <option value="3.5">3.5+</option>
+          </select>
+        </div>
+        <div className="control-group">
+          <div className="control-label">Price Range (₹/hr)</div>
+          <div style={{display:'flex',gap:'6px',alignItems:'center'}}>
+            <input className="control-input" style={{width:'90px'}} placeholder="Min" type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)}/>
+            <span style={{color:'var(--text-dim)'}}>—</span>
+            <input className="control-input" style={{width:'90px'}} placeholder="Max" type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)}/>
+          </div>
+        </div>
+        <div className="control-group">
+          <div className="control-label">Sort By</div>
+          <div className="sort-btn-group">
+            <button className={`sort-btn ${sortBy==='price_asc'?'active':''}`} onClick={() => setSortBy(sortBy==='price_asc'?'':'price_asc')}>₹ Low</button>
+            <button className={`sort-btn ${sortBy==='price_desc'?'active':''}`} onClick={() => setSortBy(sortBy==='price_desc'?'':'price_desc')}>₹ High</button>
+            <button className={`sort-btn ${sortBy==='rating'?'active':''}`} onClick={() => setSortBy(sortBy==='rating'?'':'rating')}>⭐ Top</button>
+          </div>
+        </div>
+      </div>
+
+      {/* TURFS */}
+      <section className="turfs-section" id="turfs-section">
+        <div className="section-header">
+          <div className="section-title">AVAILABLE TURFS</div>
+          <div className="turf-count">{displayed.length} turf{displayed.length !== 1 ? 's' : ''} found</div>
+        </div>
+        {loading ? (
+          <div className="spinner-wrap"><div className="spinner"/></div>
+        ) : displayed.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🏟️</div>
+            <div className="empty-title">No turfs found</div>
+            <p>Try adjusting your search or filters</p>
+          </div>
+        ) : (
+          <div className="turfs-grid">
+            {displayed.map(t => <TurfCard key={t.id} turf={t} onBook={handleBook}/>)}
+          </div>
+        )}
+      </section>
+
+      <footer>
+        <strong>TURFZONE</strong> — Book Premium Sports Facilities
+        <div style={{marginTop:'8px'}}>© 2024 TurfZone. Built with React.js + Spring Boot + MySQL</div>
+      </footer>
+
+      {bookingTurf && <BookingModal turf={bookingTurf} user={user} onClose={() => setBookingTurf(null)}/>}
+    </>
+  );
+}
+
+/* ─── APP ROOT ────────────────────────────────────────────────── */
+function App() {
+  const [page, setPage] = useState('home');
+  const { authLoading } = useContext(AuthCtx);
+
+  if (authLoading) return <div className="spinner-wrap" style={{height:'100vh'}}><div className="spinner"/></div>;
+
+  if (page === 'login') return <LoginPage onSwitchToSignup={() => setPage('signup')} onBack={() => setPage('home')}/>;
+  if (page === 'signup') return <SignupPage onSwitchToLogin={() => setPage('login')} onBack={() => setPage('home')}/>;
+  return <HomePage setPage={setPage}/>;
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(
+  <AuthProvider><App/></AuthProvider>
+);
+</script>
+</body>
+</html>

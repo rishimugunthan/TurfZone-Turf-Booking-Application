@@ -1,0 +1,159 @@
+/* ── Auth Pages (Login + Signup) ─────────────────────────────── */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--black);
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+}
+
+/* Logo */
+.auth-logo {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 0.4rem;
+  text-decoration: none;
+}
+
+.auth-logo span {
+  color: var(--red);
+}
+
+.auth-logo:hover {
+  opacity: 0.85;
+}
+
+/* Subtitle under logo */
+.auth-subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+}
+
+/* Divider line */
+.auth-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 1.5rem;
+}
+
+/* Page title */
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+/* Description text under title */
+.auth-desc {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 1.5rem;
+}
+
+/* Switch link (login ↔ signup) */
+.auth-switch {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 1rem;
+}
+
+.auth-switch a {
+  color: var(--red);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* ── Form Group (shared with BookingModal) ───────────────────── */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 11px 14px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--red);
+}
+
+.form-input::placeholder {
+  color: var(--text-dim);
+}
+
+.form-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
+}
+
+.form-submit:hover:not(:disabled) {
+  background: var(--red-dark);
+}
+
+.form-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .auth-title {
+    font-size: 26px;
+  }
+}
