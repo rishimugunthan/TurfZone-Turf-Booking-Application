@@ -4,35 +4,18 @@ import { useAuth } from '../context/AuthContext';
 import { loginAPI } from '../services/api';
 import './AuthPage.css';
 
-/**
- * LoginPage — User login form.
- *
- * Flow:
- * 1. User fills email + password
- * 2. Calls POST /api/auth/login
- * 3. On success: saves token via AuthContext.login(), redirects home
- * 4. On failure: shows error message
- *
- * Also redirects back to the page the user was trying to visit
- * before being redirected to login (using react-router state).
- */
 function LoginPage() {
   const { login } = useAuth();
   const navigate  = useNavigate();
   const location  = useLocation();
 
-  // Where to redirect after login (default: home)
   const from = location.state?.from?.pathname || '/';
-
-  // Form state
   const [form, setForm] = useState({ email: '', password: '' });
 
-  // UI state
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
   const [errors,  setErrors]  = useState({});
 
-  // ── Validation ──────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email))
@@ -43,14 +26,12 @@ function LoginPage() {
     return Object.keys(e).length === 0;
   };
 
-  // ── Handle field change ──────────────────────────────────────
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // ── Handle submit ────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -60,7 +41,6 @@ function LoginPage() {
 
     try {
       const res = await loginAPI(form);
-      // Save token + user info in context + localStorage
       login(res.data.token, res.data.user);
       navigate(from, { replace: true });
     } catch (err) {
@@ -69,7 +49,6 @@ function LoginPage() {
       } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
-        // Demo mode — simulate login when backend is offline
         login('demo-jwt-token', {
           id: 1,
           fullName: 'Demo User',
