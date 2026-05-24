@@ -4,16 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { signupAPI } from '../services/api';
 import './AuthPage.css';
 
-/**
- * SignupPage — New user registration form.
- *
- * Flow:
- * 1. User fills fullName, email, password, confirmPassword
- * 2. Client-side validation (including password match)
- * 3. Calls POST /api/auth/signup
- * 4. On success: saves token, redirects to home
- * 5. On 409: shows "email already registered" error
- */
 function SignupPage() {
   const { login } = useAuth();
   const navigate  = useNavigate();
@@ -29,7 +19,6 @@ function SignupPage() {
   const [error,   setError]   = useState('');
   const [errors,  setErrors]  = useState({});
 
-  // ── Validation ──────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (!form.fullName.trim() || form.fullName.trim().length < 2)
@@ -44,14 +33,12 @@ function SignupPage() {
     return Object.keys(e).length === 0;
   };
 
-  // ── Handle field change ──────────────────────────────────────
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // ── Handle submit ────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -74,7 +61,6 @@ function SignupPage() {
       } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
-        // Demo mode — simulate signup
         login('demo-jwt-token', {
           id: Date.now(),
           fullName: form.fullName,
