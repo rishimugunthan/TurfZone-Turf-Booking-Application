@@ -13,25 +13,13 @@ import Footer          from '../components/Footer';
 
 import './HomePage.css';
 
-/**
- * HomePage — Main landing page.
- *
- * Responsibilities:
- * - Fetch turfs from backend (fallback to mock data)
- * - Manage search, filter, sort state
- * - Apply client-side filtering and sorting
- * - Open booking modal on "Book Now" click
- * - Guard booking: redirect to login if not authenticated
- */
 function HomePage() {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
-  // ── Data state ────────────────────────────────────────────────
   const [turfs,   setTurfs]   = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ── Filter / search state ─────────────────────────────────────
   const [search,        setSearch]        = useState('');
   const [filterSport,   setFilterSport]   = useState('');
   const [filterRating,  setFilterRating]  = useState('');
@@ -39,17 +27,13 @@ function HomePage() {
   const [maxPrice,      setMaxPrice]      = useState('');
   const [sortBy,        setSortBy]        = useState('');
 
-  // ── Modal state ───────────────────────────────────────────────
-  const [bookingTurf, setBookingTurf] = useState(null); // null = closed
-
-  // ── Fetch turfs on mount ──────────────────────────────────────
+  const [bookingTurf, setBookingTurf] = useState(null); 
   useEffect(() => {
     const fetchTurfs = async () => {
       try {
         const res = await getAllTurfsAPI();
         setTurfs(res.data);
       } catch {
-        // Backend not running — use mock data
         setTurfs(MOCK_TURFS);
       } finally {
         setLoading(false);
@@ -58,17 +42,14 @@ function HomePage() {
     fetchTurfs();
   }, []);
 
-  // ── Handle "Book Now" click ───────────────────────────────────
   const handleBookClick = (turf) => {
     if (!isLoggedIn) {
-      // Redirect to login, preserving destination
       navigate('/login', { state: { from: '/' } });
       return;
     }
     setBookingTurf(turf);
   };
 
-  // ── Client-side filter + sort ─────────────────────────────────
   let displayed = [...turfs];
 
   // 1. Search filter
@@ -102,7 +83,6 @@ function HomePage() {
   if (sortBy === 'price_desc') displayed.sort((a, b) => b.pricePerHour - a.pricePerHour);
   if (sortBy === 'rating')     displayed.sort((a, b) => b.rating - a.rating);
 
-  // ─────────────────────────────────────────────────────────────
   return (
     <>
       <Navbar />
