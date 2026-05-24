@@ -7,12 +7,6 @@ import Footer  from '../components/Footer';
 import StarRating from '../components/StarRating';
 import './BookingsPage.css';
 
-/**
- * BookingsPage — Shows all bookings for the currently logged-in user.
- * This is a protected route (see ProtectedRoute.js).
- *
- * Fetches GET /api/bookings/my which is secured by JWT.
- */
 function BookingsPage() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
@@ -28,7 +22,6 @@ function BookingsPage() {
         if (err.response?.status === 403 || err.response?.status === 401) {
           setError('Session expired. Please login again.');
         } else {
-          // Demo mode — show empty state
           setBookings([]);
         }
       } finally {
