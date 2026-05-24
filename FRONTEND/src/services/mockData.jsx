@@ -1,8 +1,3 @@
-/**
- * mockData.js — Static mock data used when the Spring Boot backend is not running.
- * The components try the real API first; if it fails, they fall back to this.
- */
-
 export const MOCK_TURFS = [
   {
     id: 1,
@@ -36,7 +31,6 @@ export const MOCK_TURFS = [
   },
 ];
 
-// All unique sports across all turfs
 export const ALL_SPORTS = [
   'Cricket',
   'Football',
@@ -46,7 +40,6 @@ export const ALL_SPORTS = [
   'Volleyball',
 ];
 
-// Available time slots for booking
 export const TIME_SLOTS = [
   '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
   '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
